@@ -116,6 +116,7 @@ Please visit [this link](https://give.do/fundraisers/stand-beside-the-victims-of
 - [Deploy on your own](#deploy-on-your-own)
   - [On Vercel](#on-vercel)
     - [:film\_projector: Check Out Step By Step Video Tutorial By @codeSTACKr](#film_projector-check-out-step-by-step-video-tutorial-by-codestackr)
+  - [On Docker](#on-docker)
   - [On other platforms](#on-other-platforms)
   - [Disable rate limit protections](#disable-rate-limit-protections)
   - [Keep your fork up to date](#keep-your-fork-up-to-date)
@@ -793,6 +794,83 @@ Since the GitHub API only allows 5k requests per hour, my `https://github-readme
 11. Click deploy, and you're good to go. See your domains to use the API!
 
 </details>
+
+## On Docker
+
+```dockerignore
+# .dockerignore
+.dockerignore
+.git
+.github
+.gitignore
+build.sh
+Dockerfile
+
+.vercel
+.env
+node_modules
+*.lock
+.idea
+coverage
+benchmarks
+vercel_token
+vercel.json
+
+# IDE
+.vscode
+*.code-workspace
+```
+
+```Dockerfile
+# Dockerfile
+# Use the official Node.js image as the base image
+FROM node:20.10.0-alpine3.18
+
+# Set the working directory in the container
+WORKDIR /usr/src/app
+
+# Copy package.json and package-lock.json to the working directory
+COPY package*.json ./
+
+# Install express and other dependencies
+RUN npm install express -dd
+
+# Bundle app source code
+COPY . .
+
+# Expose the port that the app will run on
+EXPOSE 9000
+
+# Command to run the application
+CMD ["node", "express.js"]
+```
+
+```bash
+# Build the image
+docker build -t <user>/<repo>:<tag> .
+
+# Push the image to Docker Hub (optional)
+docker push <user>/<repo>:<tag>
+```
+
+```docker-compose
+# docker-compose.yml
+# syntax=docker/dockerfile:1
+
+version: "3.9"
+name: <name>
+services:
+  <service-name>:
+    image: <user>/<repo>:<tag>
+    container_name: <container-name>
+    restart: unless-stopped
+    ports:
+      - "9001:9000"
+    env_file:
+      - .env
+    environment:
+      - PAT_1=${PAT_1}
+```
 
 ## On other platforms
 
